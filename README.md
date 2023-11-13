@@ -12,13 +12,13 @@ This program is almost entirely written in C using AmigaOS graphics.library func
 - Backface culling is, of course, performed in software.
 - Bitplane and palette tricks create the appearance of transparency.
 - Polygon fill is done by the Amiga's blitter. As mentioned, I'm using graphics.library to set up the draw instead of interacting with the blitter directly. 
-- A custom copper list scrolls the background, and expands the palette options.
+- A Copper list scrolls the background, and expands the palette - most noticeable near the horizon.
 
 There's a lot of room for optimization: rewrite the math in assembly, bypass the OS and libraries, draw some better art, and so on.
 
 ## Building
 
-I've tried building the code with two different compilters. 
+I've tried building the code with two different compilers. 
 
 On native Amiga hardware, it compiles with Manx Axtec C 5.2a. You'll need to download a version of GNU Make from Aminet in order to use the included Makefile; I used [this one](http://aminet.net/package/dev/c/make-3.75-bin).
 
