@@ -1,6 +1,6 @@
 # Retrochallenge 2015 Amiga 3D Graphics Project
 
-This project is a small 3D polygon graphics demo for the Commodore Amiga. It was originally written for the 2015 [Retrochallenge](https://retrochallenge.net) event. 
+This project is a small 3D polygon graphics demo for the Commodore Amiga. It was originally written for the 2015 [Retrochallenge](https://retrochallenge.org) event. 
 
 Read about the development process at [Coronax's Project Blog](https://coronax.wordpress.com/projects/retrochallenge-2015-07/).
 
