@@ -1,0 +1,42 @@
+# Retro
+#
+# Makefile for Aztec c (v5.2)
+# links in c and math libraries
+
+INCLUDES = -i prg:include -i prg:aztecinclude
+CLIB = prg:clib
+
+retro: main.o matrix44.o util.o screen.o shape.o background2.o drawing.o interrupts.o copper.o
+	ln main.o matrix44.o util.o screen.o shape.o background2.o drawing.o interrupts.o copper.o -o retro -lmf -lc
+
+shape.o: shape.c
+	cc $(INCLUDES) -waru -ff shape.c
+
+screen.o: screen.c screen.h
+	cc $(INCLUDES) -waru -ff screen.c
+
+matrix44.o: matrix44.c matrix44.h
+	cc $(INCLUDES) -waru -ff -so matrix44.c
+
+main.o: main.c matrix44.h screen.h
+	cc $(INCLUDES) -md -waru -ff -so main.c
+
+util.o: util.c
+	cc $(INCLUDES) -waru -ff util.c
+
+background2.o: background2.c
+	cc $(INCLUDES) -waru -ff background2.c
+
+drawing.o: drawing.c
+	cc $(INCLUDES) -waru -ff -so drawing.c
+
+interrupts.o: interrupts.asm
+	as interrupts.asm
+
+copper.o: copper.c
+	cc $(INCLUDES) -waru -ff copper.c
+
+clean:
+	delete *.o
+
+
