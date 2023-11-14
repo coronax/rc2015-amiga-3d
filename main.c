@@ -11,7 +11,6 @@
 #include <clib/timer_protos.h>
 #include "matrix44.h"
 #include "screen.h"
-#include "drawing.h"
 
 extern struct GfxBase* GfxBase;
 
@@ -19,11 +18,6 @@ extern struct Custom custom;
 //struct Custom* custom = (struct Custom*)0x00DFF000;
 
 
-/*
-struct Screen *screen = NULL;
-struct Screen *io_screen = NULL;
-struct Window *window = NULL;
-*/
 const int screen_width = 320;
 const int screen_height = 200;
 
@@ -58,14 +52,13 @@ void PrintCopperList (struct cprlist* cpr)
 
 #define MAX_POINTS 64
 
-extern UWORD rasterpos; // bits of scroll
-extern void int_handler();
+UWORD rasterpos; // bits of scroll
 int bytescroll = 0;
-extern UWORD* bytepos; // scroll location
+UWORD* bytepos; // scroll location
 UWORD* bytepos_base;
 struct Interrupt copper_int;
-extern UWORD rasterpos2;
-extern UWORD* bytepos2;
+UWORD rasterpos2;
+UWORD* bytepos2;
 UWORD* bytepos2_base;
 int bytescroll2 = 0;
 
@@ -209,160 +202,6 @@ void ShowScreen (struct MyScreen* s)
     WaitBOVP (s->View->ViewPort);
 }
 
-#define COLOR0 0x0180
-#define COLOR1 0x0182
-#define COLOR2 0x0184
-#define COLOR3 0x0186
-#define COLOR4 0x0188
-#define COLOR5 0x018a
-#define COLOR6 0x018c
-#define COLOR7 0x018e
-#define COLOR8 0x0190
-#define COLOR9 0x0192
-#define INT_TRIGGER 0x009c
-
-#define DDFSTRT 0x092
-#define BPL1MOD 0x108
-#define BPL2MOD 0x10a
-
-#if 0
-UWORD coplist[] = {
-	46,			/* num entries */
-	0, 0, COLOR0, 0x042c,
-	-1, 0, DDFSTRT, 0x30,	// set prefetch and modulo
-	-1, 0, BPL1MOD, 36,
-	-1, 0, BPL2MOD, 36,
-	-1, 0, COLOR2, 0x0ddd,
-	-1, 0, COLOR3, 0x0daa,
-	-1, 0, COLOR6, 0x0ada,
-	-1, 0, COLOR7, 0x0aad,
-	12, 0, COLOR0, 0x053c,
-	24, 0, COLOR0, 0x064c,
-	94, 65, INT_TRIGGER, INTF_SETCLR | INTF_COPER, /* copper interrupt *//*originally at 95,0*/
-	95, 0, COLOR0, 0x075d,
-	97, 0, COLOR2, 0x0222,
-	-1,  0, COLOR3, 0x711,
-	-1,  0, COLOR6, 0x272,
-	-1,  0, COLOR7, 0x333,
-	98, 0, COLOR0, 0x086d,
-	100, 0, COLOR0, 0x097d,
-	102, 0, COLOR0, 0x0a8d,
-	104, 0, COLOR0, 0x0b9e,
-	106, 0, COLOR0, 0x0cae,
-	108, 0, COLOR0, 0x0dbe,
-	110, 0, COLOR0, 0x0ece,
-	112, 0, COLOR0, 0x0ede,
-	114, 0, COLOR0, 0x0eee,
-	119, 0, COLOR0, 0x0443, /* ground transition */
-	-1,  0, COLOR1, 0x833,
-	-1,  0, COLOR4, 0x383,
-	-1,  0, COLOR5, 0x338,
-	133, 65, INT_TRIGGER, INTF_SETCLR | INTF_COPER, /* copper interrupt *//*originally at 95,0*/
-	134, 0, COLOR0, 0x0553,
-	-1,  0, COLOR1, 0x933,
-	-1,  0, COLOR4, 0x393,
-	-1,  0, COLOR5, 0x339,
-	148, 0, COLOR0, 0x0664,
-	-1,  0, COLOR1, 0xa33,
-	-1,  0, COLOR4, 0x3a3,
-	-1,  0, COLOR5, 0x33a,
-	162, 0, COLOR0, 0x0774,
-	-1,  0, COLOR1, 0xb33,
-	-1,  0, COLOR4, 0x3b3,
-	-1,  0, COLOR5, 0x33b,
-	176, 0, COLOR0, 0x0885,
-	-1,  0, COLOR1, 0xc33,
-	-1,  0, COLOR4, 0x3c3,
-	-1,  0, COLOR5, 0x33c,
-	190, 0, COLOR0, 0x0995
-};
-
-
-struct UCopList* CreateCopperList (UWORD *data)
-{
-	struct UCopList* uCopList = (struct UCopList*)AllocMem(sizeof(struct UCopList), MEMF_PUBLIC | MEMF_CLEAR);
-	int num_entries = data[0];
-	int i;
-	printf ("copper list num entries is %d\n", num_entries);
-	CINIT (uCopList, num_entries * 2 + 1);
-	for (i = 0; i < num_entries; ++i)
-	{
-		if (data[i*4+1] != -1)
-			CWAIT (uCopList, (WORD)data[i*4+1], (WORD)data[i*4+2]);
-		CMove (uCopList, (void*)(0x00DFF000+data[i*4+3]), data[i*4+4]);
-		CBump(uCopList);
-	}
-	CEND (uCopList);
-	return uCopList;
-}
-	
-int CreateCopperFX0 ()
-{
-	struct UCopList* uCopList = CreateCopperList (coplist);
-	/*
-	struct UCopList* uCopList = (struct UCopList*)AllocMem(sizeof(struct UCopList), MEMF_PUBLIC | MEMF_CLEAR);
-	int scanlines_per = 5;
-	UWORD spectrum[] = {
-		0x0604,0x0605,0x0606,0x0607,0x0617,0x0618,0x0619,
-		0x0629,0x072a,0x073b,0x074b,0x074c,0x075d,0x076e,
-		0x077e,0x088f,0x07af,0x06cf,0x05ff,0x04fb,0x04f7,
-		0x03f3,0x07f2,0x0bf1,0x0ff0,0x0fc0,0x0ea0,0x0e80,
-		0x0e60,0x0d40,0x0d20,0x0d00
-		};
-	int i;
-	
-	puts("about to create cop list\n");
-	CINIT (uCopList, 65);
-	for (i = 0; i < 32; ++i)
-	{
-		CWAIT(uCopList, i * scanlines_per, 0);
-		CMOVE(uCopList, custom.color[0], spectrum[i]);
-	}
-	CEND(uCopList);
-	*/
-	Forbid();
-	view[0].ViewPort->UCopIns = uCopList;
-	Permit();
-	MrgCop (view[0].View);
-	
-	return TRUE;
-}
-
-
-int CreateCopperFX1 ()
-{
-	struct UCopList* uCopList = CreateCopperList (coplist);
-/*	struct UCopList* uCopList = (struct UCopList*)AllocMem(sizeof(struct UCopList), MEMF_PUBLIC | MEMF_CLEAR);
-	int scanlines_per = 5;
-	UWORD spectrum[] = {
-		0x0604,0x0605,0x0606,0x0607,0x0617,0x0618,0x0619,
-		0x0629,0x072a,0x073b,0x074b,0x074c,0x075d,0x076e,
-		0x077e,0x088f,0x07af,0x06cf,0x05ff,0x04fb,0x04f7,
-		0x03f3,0x07f2,0x0bf1,0x0ff0,0x0fc0,0x0ea0,0x0e80,
-		0x0e60,0x0d40,0x0d20,0x0d00
-		};
-	int i;
-	
-	puts("about to create cop list\n");
-	CINIT (uCopList, 161);
-	for (i = 0; i < 32; ++i)
-	{
-		CWAIT(uCopList, i * scanlines_per, 0);
-		CMOVE(uCopList, custom.color[0], spectrum[i]);
-		CWAIT(uCopList, i * scanlines_per, 100);
-		CMOVE(uCopList, custom.color[0], (UWORD)0x0000);
-		CMOVE(uCopList, custom.color[0], spectrum[i]);
-	}
-	CEND(uCopList);
-	*/
-	Forbid();
-	view[1].ViewPort->UCopIns = uCopList;
-	Permit();
-	MrgCop (view[1].View);
-	
-	return TRUE;
-}
-#endif
 
 
 /*
@@ -391,7 +230,6 @@ BOOL DoIDCMP ()
 
 int main (int argc, char** argv)
 {
-//    int i,j;
 	Shape** shapes;
     struct View* old_view = NULL;
     BOOL success = TRUE;
@@ -470,8 +308,6 @@ int main (int argc, char** argv)
 	//success = 0;
 	//goto shutdown;
     success = success && OpenTheScreens();
-//	success = success && CreateCopperFX0();
-//	success = success && CreateCopperFX1();
 	
 	CramCopperList (&view[0]);
 	CramCopperList (&view[1]);
@@ -499,16 +335,7 @@ int main (int argc, char** argv)
 	
 	UpdateCopperList (&view[0], bytepos, rasterpos, bytepos2, rasterpos2);
 	UpdateCopperList (&view[1], bytepos, rasterpos, bytepos2, rasterpos2);
-	
-#if 0
-	copper_int.is_Node.ln_Type = NT_INTERRUPT;
-	copper_int.is_Node.ln_Pri = 127;//60;	// maybe a higher priority will give more consistency
-	copper_int.is_Node.ln_Name = "copper ex";
-	copper_int.is_Data = (APTR)&rasterpos;
-	copper_int.is_Code = int_handler;
-	
-	AddIntServer (INTB_COPER, &copper_int);
-#endif
+
 	
     if (success)
     {
@@ -608,9 +435,6 @@ int main (int argc, char** argv)
 				//	SetAPen(rp,l);
 
 				
-//				ClearPlane (view[next_buffer].RasInfo1->BitMap, 0);
-//				ClearPlane (view[next_buffer].RasInfo1->BitMap, 2);
-				//ClearPlane (&view[next_buffer], 3);
 				RenderShapeFaces (rp, shape, &transform_matrix, &sp_matrix);
 				
 				//DrawTest (rp->BitMap, 0);
@@ -660,7 +484,7 @@ int main (int argc, char** argv)
 		}
 		
 		elapsed = edge_elapsed / (double)E_Freq;
-		//printf ("Edge draing time: %f\n", elapsed);
+		//printf ("Edge drawing time: %f\n", elapsed);
 		
         printf ("ticks per second is %d\n", E_Freq);
 		
@@ -668,8 +492,6 @@ int main (int argc, char** argv)
 		free (cos_table);
 	}
 	
-	//RemIntServer (INTB_COPER, &copper_int);
-
 	CloseTheScreens();
 shutdown:
 
