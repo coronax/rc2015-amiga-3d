@@ -128,6 +128,9 @@ int DotProduct (Point4* u, Point4* v);
 /* m3 = m1 * m2 */
 void MultMatrix (Matrix44* m1, Matrix44* m2, Matrix44* m3);
 
+/* m3 = m1 * m2
+ * This version takes some shortcuts, and only works if the bottom row of
+ * m1 and m2 are both [0 0 0 1]. */
 void MultAffine (Matrix44* m1, Matrix44* m2, Matrix44* m3);
 
 /* Right-shift each element of the matrix by 8 bits.  

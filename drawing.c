@@ -19,6 +19,8 @@ void DrawTest (struct BitMap* bp, int plane_number)
 	}
 }
 
+// Line-drawing routine using Bresenham's algorithm.
+// Not used in the current version.
 // x0, y0, x1, y1 are ints and not FIXEDs
 void DrawLine (struct BitMap* bp, int plane_number, int x0, int y0, int x1, int y1)
 {

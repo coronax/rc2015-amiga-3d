@@ -13,10 +13,10 @@ Shape** LoadShapes (char* filename)
 	if (!f)
 		return NULL;
 
-	printf ("scan test 1\n");
-	fscanf (f, "%lf\n", &a2);
-	printf ("scan test 2\n");
-	printf ("val: %lf\n", a2);
+	//printf ("scan test 1\n");
+	fscanf (f, "%f\n", &a2);
+	//printf ("scan test 2\n");
+	//printf ("val: %f\n", a2);
 		
 	fscanf (f, "%d\n", &num_shapes);
 	printf ("reading %d shapes\n", num_shapes);
@@ -33,17 +33,17 @@ Shape** LoadShapes (char* filename)
 		printf ("numpoints %d\n", shape->mNumPoints);
 		for (j = 0; j < shape->mNumPoints; ++j)
 		{
-		  printf("a\n");
+		  //printf("a\n");
 	     
 			fscanf (f, "%f %f %f\n", &a, &b, &c);
-			printf("b\n");
+			//printf("b\n");
 			printf ("read point %f %f %f\n", a, b, c);
-			printf("c\n");
+			//printf("c\n");
 			shape->mPoints[j].val[0] = FLOATTOFIX(a);
 			shape->mPoints[j].val[1] = FLOATTOFIX(b);
 			shape->mPoints[j].val[2] = FLOATTOFIX(c);
 			shape->mPoints[j].val[3] = FLOATTOFIX(1.0);
-			printf("d\n");
+			//printf("d\n");
 		}
 		fscanf (f, "%hd\n", &shape->mNumEdges);
 		shape->mEdges = (Edge*)malloc(shape->mNumEdges*sizeof(Edge));
@@ -51,12 +51,13 @@ Shape** LoadShapes (char* filename)
 		{
 			fscanf (f, "%hd %hd\n", &shape->mEdges[j].p1,
 			&shape->mEdges[j].p2);
-			printf ("read edge %hd %hd\n", &shape->mEdges[j].p1,
-				&shape->mEdges[j].p2);
+			//printf ("read edge %d %d\n", &shape->mEdges[j].p1,
+			//	&shape->mEdges[j].p2);
 			shape->mEdges[j].drawn = 0;
 		}
 		fscanf (f, "%hd\n", &shape->mNumFaces);
 		shape->mFaces = (Face*)malloc(shape->mNumFaces*sizeof(Face));
+		printf ("num faces is %d\n",shape->mNumFaces);
 		for (j = 0; j < shape->mNumFaces; ++j)
 		{
 			Face* face = &shape->mFaces[j];

@@ -175,7 +175,6 @@ BOOL OpenMyScreen (struct MyScreen* s)
 	CopyImage (s->RasInfo1->BitMap, 1, 0, background_data, 320, 200);
 	CopyImage (s->RasInfo1->BitMap, 1, 320, background_data, 320, 200);
 	SetWrMsk (s->RastPort, 0xff ^ (1<<1));
-	//SetWrMsk (s->RastPort, 0xff ^ (1<<bitplane));
 	    
    // s->ColorMap = GetColorMap(32L);
     vc_tags[0].ti_Data = (ULONG)s->ViewPort;
