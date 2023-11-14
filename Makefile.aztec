@@ -6,8 +6,8 @@
 INCLUDES = -i prg:include -i prg:aztecinclude
 CLIB = prg:clib
 
-retro: main.o matrix44.o util.o screen.o shape.o background2.o drawing.o interrupts.o copper.o
-	ln main.o matrix44.o util.o screen.o shape.o background2.o drawing.o interrupts.o copper.o -o retro -lmf -lc
+retro: main.o matrix44.o util.o screen.o shape.o background2.o copper.o
+	ln main.o matrix44.o util.o screen.o shape.o background2.o copper.o -o retro -lmf -lc
 
 shape.o: shape.c
 	cc $(INCLUDES) -waru -ff shape.c
@@ -26,12 +26,6 @@ util.o: util.c
 
 background2.o: background2.c
 	cc $(INCLUDES) -waru -ff background2.c
-
-drawing.o: drawing.c
-	cc $(INCLUDES) -waru -ff -so drawing.c
-
-interrupts.o: interrupts.asm
-	as interrupts.asm
 
 copper.o: copper.c
 	cc $(INCLUDES) -waru -ff copper.c

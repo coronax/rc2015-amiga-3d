@@ -3,7 +3,7 @@ CC = m68k-amigaos-gcc
 FLAGS = -O3 -march=68000
 LIBS = -noixemul -lm
 
-FILES = main.c screen.c shape.c util.c matrix44.c drawing.c background2.c copper.c interrupts.s
+FILES = main.c screen.c shape.c util.c matrix44.c background2.c copper.c
 
 retro: $(FILES)
 	$(CC) $(FLAGS) $(FILES) $(LIBS) -o retro
